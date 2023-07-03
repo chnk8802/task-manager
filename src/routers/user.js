@@ -50,9 +50,9 @@ router.post('/users/logoutAll', auth, async (req, res) => {
         try {
             req.user.tokens = [];
             await req.user.save();
-            res.send('All users logged out!')
+            res.send('All users logged out!');
         } catch (e) {
-            res.status(500).send(e)
+            res.status(500).send(e);
         }
 });
 
@@ -62,7 +62,7 @@ router.get('/users/me', auth , async (req, res) => {
 });
 
 // Update a User
-router.patch('/users/me', auth, async (req, res) => {
+router.patch('/users/update', auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'email', 'password', 'age'];
     const isValidOperation = updates.every((update) =>  allowedUpdates.includes(update));
@@ -84,7 +84,7 @@ router.patch('/users/me', auth, async (req, res) => {
 // Delete a User
 router.delete('/users/me', auth, async(req, res) => {
     try {
-        await req.user.remove()
+        await req.user.remove();
         sendCancelationEmail(req.user.email, req.user.name);
         res.send(req.user);
     } catch (e) {
@@ -107,9 +107,9 @@ const upload = multer({
 
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
     const buffer = await sharp(req.file.buffer).resize({width: 250, height: 250}).png().toBuffer()
-    req.user.avatar = buffer
-    await req.user.save()
-    res.send()
+    req.user.avatar = buffer;
+    await req.user.save();
+    res.send();
 }, (error, req, res, next) => {
     res.status(400).send({error: error.message})
 })
@@ -117,31 +117,31 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
 // To delete an avatar
 router.delete('/users/me/avatar', auth, async (req, res) => {
     if (!req.user.avatar) {
-        res.status(400).send('No avatar to delete!')
+        res.status(400).send('No avatar to delete!');
     }
     try {
         req.user.avatar = undefined
-        await req.user.save()
-        res.send()
+        await req.user.save();
+        res.send();
     } catch (e) {
-        res.status(500).send()
+        res.status(500).send();
     }
 })
 
 // To view an avatar
 router.get('/users/:id/avatar', async (req, res) => {
     try {
-            const user = await User.findById(req.params.id)
+            const user = await User.findById(req.params.id);
 
             if (!user || !user.avatar) {
-                    throw new Error ()
+                    throw new Error ();
             }
 
-            res.set('Content-Type', 'image/png')
-            res.send(user.avatar)
+            res.set('Content-Type', 'image/png');
+            res.send(user.avatar);
     }
     catch (e) {
-            res.status(400).send()
+            res.status(400).send();
     }
 })
 

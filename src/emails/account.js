@@ -19,7 +19,7 @@ const sendCancelationEmail = (email, name) => {
     })
 }
 
-module.exports = {
-    sendWelcomeEmail,
-    sendCancelationEmail
-}
+ module.exports = {
+     sendWelcomeEmail,
+     sendCancelationEmail
+ }
