@@ -25,7 +25,7 @@ router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);
         const token = await user.generateAuthToken();
-        res.send({ Message: `Logged In Successfully! You are Welcome ${user.name}`, user, token });
+        res.send({ message: `Logged In Successfully! You are Welcome ${user.name}`, user, token });
     } catch (e) {
         res.status(400).send({ error: 'Error logging in user' });
     }
@@ -39,7 +39,7 @@ router.post('/users/logout', auth, async (req, res) => {
         });
         await req.user.save();
 
-        res.send('User loggedout successfully!');
+        res.send({ message: 'User logged out successfully!' });
     } catch (e) {
         res.status(500).send({ error: 'Error logging out user' });
     }
