@@ -16,7 +16,7 @@ router.post('/users/signup', async (req, res) => {
         const token = await user.generateAuthToken();
         res.status(201).send({ message: 'User created successfully', user, token });
     } catch (e) {
-        res.status(400).send({ error: 'Error creating user' });
+        res.status(400).send({ error: 'Error creating user: ' + e.message });
     }
 });
 
@@ -27,7 +27,7 @@ router.post('/users/login', async (req, res) => {
         const token = await user.generateAuthToken();
         res.send({ message: `Logged In Successfully! You are Welcome ${user.name}`, user, token });
     } catch (e) {
-        res.status(400).send({ error: 'Error logging in user' });
+        res.status(400).send({ error: 'Error logging in user: ' + e.message });
     }
 });
 
