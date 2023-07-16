@@ -17,7 +17,7 @@ router.post('/users/signup', async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 1, // Cookie expiration time (e.g., 1 hour)
-            sameSite: 'strict', // Optional: Mitigates CSRF attacks
+            sameSite: 'None', // Optional: Mitigates CSRF attacks
         })
         res.status(201).send({ message: 'User created successfully', user, token });
     } catch (e) {
