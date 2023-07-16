@@ -14,11 +14,6 @@ router.post('/users/signup', async (req, res) => {
         await user.save();
         sendWelcomeEmail(user.email, user.name, user.password);
         const token = await user.generateAuthToken();
-        res.cookie('token', token, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 1, // Cookie expiration time (e.g., 1 hour)
-            sameSite: 'None', // Optional: Mitigates CSRF attacks
-        })
         res.status(201).send({ message: 'User created successfully', user, token });
     } catch (e) {
         res.status(400).send({ error: 'Error creating user: ' + e.message });
@@ -30,7 +25,11 @@ router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);
         const token = await user.generateAuthToken();
-        res.send({ message: `Logged In Successfully! You are Welcome ${user.name}`, user, token });
+        res.cookie('jwtoken', token, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 1, // Cookie expiration time (e.g., 1 hour)
+        })
+        res.send({ message: `Logged In Successfully! You are Welcome ${user.name}` });
     } catch (e) {
         res.status(400).send({ error: 'Error logging in user: ' + e.message });
     }
