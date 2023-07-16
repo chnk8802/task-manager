@@ -1,5 +1,6 @@
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('./db/mongoose');
 // require('./db/mongoose')();
 const userRouter = require('./routers/user');
@@ -7,6 +8,7 @@ const taskRouter = require('./routers/task');
 
 // start Express server
 const app = express();
+app.use(cookieParser());
 app.use(cors());
 // To parse the incoming json data from POST request
 app.use(express.json());

@@ -14,6 +14,11 @@ router.post('/users/signup', async (req, res) => {
         await user.save();
         sendWelcomeEmail(user.email, user.name, user.password);
         const token = await user.generateAuthToken();
+        res.cookie('token', token, {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 1, // Cookie expiration time (e.g., 1 hour)
+            sameSite: 'strict', // Optional: Mitigates CSRF attacks
+        })
         res.status(201).send({ message: 'User created successfully', user, token });
     } catch (e) {
         res.status(400).send({ error: 'Error creating user: ' + e.message });
