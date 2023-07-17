@@ -28,7 +28,7 @@ router.post('/users/login', async (req, res) => {
         res.cookie('jwtoken', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 1, // Cookie expiration time (e.g., 1 hour)
-        })
+        });
         res.send({ message: `Logged In Successfully! You are Welcome ${user.name}` });
     } catch (e) {
         res.status(400).send({ error: 'Error logging in user: ' + e.message });
