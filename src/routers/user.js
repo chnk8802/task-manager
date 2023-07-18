@@ -25,7 +25,7 @@ router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password);
         const token = await user.generateAuthToken();
-        res.cookie('jwtoken', token, {
+        res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 1, // Cookie expiration time (e.g., 1 hour)
         });
@@ -62,11 +62,11 @@ router.post('/users/logoutAll', auth, async (req, res) => {
 
 // User porfile
 router.get('/users/me', auth, async (req, res) => {
-    res.send(req.user);
+    res.send({user: req.user, message: `Welcome ${req.user.name}` });
 });
 
 // Update a User
-router.patch('/users/me', auth, async (req, res) => {
+router.patch('/users/me/update', auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'email', 'password', 'age'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
