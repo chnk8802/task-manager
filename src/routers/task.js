@@ -54,11 +54,11 @@ router.get('/tasks/:id', auth, async (req, res) => {
     try {
         const task = await Task.findOne({ _id, owner: req.user._id});
         if (!task) {
-            return res.status(404).send({Error:"No Task(s) Found!!!!!"});
+            return res.status(404).send({Error: "Sorry! No such task found."});
         }
         res.send(task);
     } catch (e) {
-        res.status(500).send({Error:"No Task(s) Found!"});
+        res.status(500).send({Error: "Couldn't Delete Task :("});
     }
 
 })
@@ -78,7 +78,7 @@ router.patch('/tasks/:id', auth, async (req, res) => {
 
 
             if (!task) {
-                res.status(404).send();
+                res.status(404).send({Error: "Sorry! No such task found."});
             }
             
             updates.forEach((update) => task[update] = req.body[update]);
@@ -86,7 +86,7 @@ router.patch('/tasks/:id', auth, async (req, res) => {
 
             res.send(task);
     } catch (e) {
-            res.status(400).send(e);
+            res.status(400).send({Error: "Couldn't Update Task :("});
     }
 });
 
