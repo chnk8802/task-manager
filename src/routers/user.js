@@ -16,7 +16,7 @@ router.post('/users/signup', async (req, res) => {
         const token = await user.generateAuthToken();
         res.status(201).send({ message: 'User created successfully', user, token });
     } catch (e) {
-        res.status(400).send({ error: 'Error creating user: ' + e.message });
+        res.status(400).send({ error: e.message });
     }
 });
 
@@ -31,12 +31,13 @@ router.post('/users/login', async (req, res) => {
         });
         res.send({ message: `Logged In Successfully! You are Welcome ${user.name}` });
     } catch (e) {
-        res.status(400).send({ error: 'Error logging in user: ' + e.message });
+        res.status(400).send({ error: e.message });
     }
 });
 
 // Logout a User
 router.post('/users/logout', auth, async (req, res) => {
+    console.log(req.user.tokens)
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token
@@ -66,7 +67,7 @@ router.get('/users/me', auth, async (req, res) => {
 });
 
 // Update a User
-router.patch('/users/me/update', auth, async (req, res) => {
+router.patch('/users/me', auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'email', 'password', 'age'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
@@ -99,7 +100,7 @@ router.delete('/users/me', auth, async (req, res) => {
 // To upload an avatar
 const upload = multer({
     limit: {
-        FileSize: 1000000
+        FileSize: 5000000
     },
     fileFilter(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
@@ -110,7 +111,6 @@ const upload = multer({
 })
 
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
-
         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
         if (!buffer) {
             throw new Error("Invalid File! Not uploaded")

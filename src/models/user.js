@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
             // required: true,
             default: 0,
             validate(value) {
-                if (value < 18) throw new Error('Your age must be above 18.')
+                if (value < 18) throw new Error('Age must be above 18')
             }
         },
         email: {
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
             lowercase: true,
             validate(value) {
                 if (!validator.isEmail(value)) {
-                    throw new Error('Email is invalid!')
+                    throw new Error('Email invalid')
                 }
             }
         },
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
             minLength: 8,
             trim: true,
             validate(value) {
-                if (value.toLowerCase().includes('password')) throw new Error(`You cannot use "${value}" as your password.`);
+                if (value.toLowerCase().includes('password')) throw new Error(`Cannot use "${value}" as password`);
             }
         },
         tokens: [{
@@ -90,13 +90,13 @@ userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-        throw new Error('Unable to login!');
+        throw new Error('Incorrect email');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-        throw new Error('Incorrect password!');
+        throw new Error('Incorrect password');
     }
 
     return user;
