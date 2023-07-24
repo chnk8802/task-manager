@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
         email: {
             type: String,
             unique: true,
-            required: true,
+            // required: true,
             trim: true,
             lowercase: true,
             validate(value) {
@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: true,
+            // required: true,
             minLength: 8,
             trim: true,
             validate(value) {

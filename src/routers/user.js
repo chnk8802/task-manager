@@ -80,9 +80,9 @@ router.patch('/users/me', auth, async (req, res) => {
         updates.forEach((update) => req.user[update] = req.body[update]);
         await req.user.save();
 
-        res.send(req.user);
+        res.send({message: `Updated were successful`});
     } catch (e) {
-        res.status(400).send(e);
+        res.status(400).send({Error: "Updates went Unsuccessful:("});
     }
 });
 
@@ -100,7 +100,7 @@ router.delete('/users/me', auth, async (req, res) => {
 // To upload an avatar
 const upload = multer({
     limit: {
-        FileSize: 5000000
+        FileSize: 1000000
     },
     fileFilter(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
@@ -117,7 +117,7 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
         }
         req.user.avatar = buffer;
         await req.user.save();
-        res.send("Done");
+        res.send({message: "Avatar uploaded successfully!"});
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
 })
@@ -149,7 +149,7 @@ router.get('/users/:id/avatar', async (req, res) => {
         res.send(user.avatar);
     }
     catch (e) {
-        res.status(400).send();
+        res.status(400).send({Error: "Problem loading Avatar:("});
     }
 })
 
