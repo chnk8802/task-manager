@@ -27,7 +27,7 @@ router.post('/users/login', async (req, res) => {
         const token = await user.generateAuthToken();
         res.cookie('token', token, {
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 1, // Cookie expiration time (e.g., 1 hour)
+            maxAge: 1000 * 60 * 60 * 6, // Cookie expiration time (e.g., 6 hour)
         });
         res.send({ message: `Logged In Successfully! You are Welcome ${user.name}` });
     } catch (e) {
@@ -130,26 +130,26 @@ router.delete('/users/me/avatar', auth, async (req, res) => {
     try {
         req.user.avatar = undefined
         await req.user.save();
-        res.send();
+        res.send({message: "Avatar Deleted successfully, upload a new one anytime:)"});
     } catch (e) {
-        res.status(500).send();
+        res.status(500).send({Error: "Couldn't Delete Avatar"});
     }
 })
 
 // To view an avatar
-router.get('/users/:id/avatar', async (req, res) => {
+router.get('/users/:id/avatar', auth, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
 
         if (!user || !user.avatar) {
-            throw new Error();
+            throw new Error("No Avatar Found");
         }
 
         res.set('Content-Type', 'image/png');
         res.send(user.avatar);
     }
     catch (e) {
-        res.status(400).send({Error: "Problem loading Avatar:("});
+        res.status(400).send();
     }
 })
 
