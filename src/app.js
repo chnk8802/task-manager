@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('./db/mongoose');
-// require('./db/mongoose')();
 const userRouter = require('./routers/user');
 const taskRouter = require('./routers/task');
 

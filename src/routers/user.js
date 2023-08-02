@@ -26,10 +26,9 @@ router.post('/users/login', async (req, res) => {
         const user = await User.findByCredentials(req.body.email, req.body.password);
         const token = await user.generateAuthToken();
         res.cookie('token', token, {
-            httpOnly: true,
             maxAge: 1000 * 60 * 60 * 6, // Cookie expiration time (e.g., 6 hour)
         });
-        res.send({ message: `Logged In Successfully! You are Welcome ${user.name}` });
+        res.send({ message: `Logged In Successfully! You are Welcome ${user.name}`, token });
     } catch (e) {
         res.status(400).send({ error: e.message });
     }
@@ -37,7 +36,6 @@ router.post('/users/login', async (req, res) => {
 
 // Logout a User
 router.post('/users/logout', auth, async (req, res) => {
-    console.log(req.user.tokens)
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token
@@ -82,7 +80,7 @@ router.patch('/users/me', auth, async (req, res) => {
 
         res.send({message: `Updated were successful`});
     } catch (e) {
-        res.status(400).send({Error: "Updates went Unsuccessful:("});
+        res.status(400).send({ Error: "Updates went Unsuccessful:(" });
     }
 });
 
