@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const sharp = require('sharp')
 const User = require('../models/user');
@@ -14,7 +15,7 @@ router.post('/users/signup', async (req, res) => {
         await user.save();
         sendWelcomeEmail(user.email, user.name, user.password);
         const token = await user.generateAuthToken();
-        res.status(201).send({ message: 'User created successfully', user, token });
+        res.status(201).send({ message: 'User created successfully', user });
     } catch (e) {
         res.status(400).send({ error: e.message });
     }
@@ -28,10 +29,22 @@ router.post('/users/login', async (req, res) => {
         res.cookie('token', token, {
             maxAge: 1000 * 60 * 60 * 6, // Cookie expiration time (e.g., 6 hour)
         });
-        res.send({ message: `Logged In Successfully! You are Welcome ${user.name}`, token });
+        res.send({ message: `Logged In Successfully! You are Welcome ${user.name}` });
     } catch (e) {
         res.status(400).send({ error: e.message });
     }
+});
+
+router.get('/users/validate', auth, async (req, res)=>{
+    const token = req.header('Cookie').replace('token=', "")
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use of Auth token created using jwt in user model.
+        
+            const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+
+        if (!user) {
+            throw new Error();
+        }
+        res.send({isValidated:true});
 });
 
 // Logout a User
@@ -61,6 +74,7 @@ router.post('/users/logoutAll', auth, async (req, res) => {
 
 // User porfile
 router.get('/users/me', auth, async (req, res) => {
+    const user = await User.findById(req.user._id);
     res.send({user: req.user, message: `Welcome ${req.user.name}` });
 });
 
@@ -77,7 +91,6 @@ router.patch('/users/me', auth, async (req, res) => {
     try {
         updates.forEach((update) => req.user[update] = req.body[update]);
         await req.user.save();
-
         res.send({message: `Updated were successful`});
     } catch (e) {
         res.status(400).send({ Error: "Updates went Unsuccessful:(" });
