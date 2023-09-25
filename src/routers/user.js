@@ -35,17 +35,27 @@ router.post('/users/login', async (req, res) => {
     }
 });
 
-router.get('/users/validate', auth, async (req, res)=>{
-    const token = req.header('Cookie').replace('token=', "")
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use of Auth token created using jwt in user model.
-        
-            const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+router.post('/users/validate', auth, async (req, res) => {
+    try {
+      const token = req.body.token;
+      if (!token) {
+        return res.status(401).send({ error: "Token is missing",isValidated: false });
+      }
+      
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+  
+      if (!user) {
+        return res.status(401).send({ error: "Unauthorized",isValidated: false });
+      }
 
-        if (!user) {
-            throw new Error();
-        }
-        res.send({isValidated:true});
-});
+      res.send({ isValidated: true });
+    } catch (error) {
+      console.error("Error in user validation:", error);
+      res.status(500).send({ error: "Internal Server Error",isValidated: false });
+    }
+  });
+  
 
 // Logout a User
 router.post('/users/logout', auth, async (req, res) => {
