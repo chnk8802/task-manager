@@ -28,7 +28,8 @@ router.post('/users/login', async (req, res) => {
         const token = await user.generateAuthToken();
         res.cookie('token', token, {
             maxAge: 1000 * 60 * 60 * 6, // Cookie expiration time (e.g., 6 hour)
-            secure: true
+            secure: true,
+            path: "/"
         });
         res.send({ message: `Logged In Successfully! You are Welcome ${user.name}` });
     } catch (e) {
