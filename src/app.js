@@ -8,7 +8,7 @@ const taskRouter = require('./routers/task');
 // start Express server
 const app = express();
 app.use(cookieParser());
-app.use(cors({ origin:  '*', credentials: true}));
+app.use(cors({ origin:  ['http://localhost:5173', 'http://localhost:5174'], credentials: true}));
 // To parse the incoming json data from POST request
 app.use(express.json());
 // Using Routes
