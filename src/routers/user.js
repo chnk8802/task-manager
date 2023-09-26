@@ -51,9 +51,9 @@ router.post('/users/validate', auth, async (req, res) => {
         return res.status(401).send({ error: "Unauthorized",isValidated: false });
       }
 
-      res.send({ isValidated: true });
-    } catch (error) {
-      console.error("Error in user validation:", error);
+      res.send({message:"Success", isValidated: true });
+    } catch (e) {
+      console.error("Error in user validation:", e);
       res.status(500).send({ error: "Internal Server Error",isValidated: false });
     }
   });
@@ -131,24 +131,29 @@ const upload = multer({
         }
         cb(undefined, true)
     }
-})
+});
 
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+    if (!req.file){
+        res.send({message:"Invalid File!"})
+    } else if (req.file) {
         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
-        if (!buffer) {
-            throw new Error("Invalid File! Not uploaded")
-        }
-        req.user.avatar = buffer;
-        await req.user.save();
-        res.send({message: "Avatar uploaded successfully!"});
+            if (!buffer) {
+                res.send({message:"Invalid File! Not uploaded"});
+            }
+            req.user.avatar = buffer;
+            await req.user.save();
+            res.send({message: "Avatar uploaded successfully!"});
+    }
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
-})
+}
+)
 
 // To delete an avatar
 router.delete('/users/me/avatar', auth, async (req, res) => {
     if (!req.user.avatar) {
-        res.status(400).send('No avatar to delete!');
+        res.send({error:"No Avatar Found"});
     }
     try {
         req.user.avatar = undefined
@@ -165,14 +170,14 @@ router.get('/users/:id/avatar', auth, async (req, res) => {
         const user = await User.findById(req.params.id);
 
         if (!user || !user.avatar) {
-            throw new Error("No Avatar Found");
+            res.send({error:"No Avatar Found"});
         }
 
         res.set('Content-Type', 'image/png');
         res.send(user.avatar);
     }
     catch (e) {
-        res.status(400).send();
+        res.status(400).send({error: e});
     }
 })
 
